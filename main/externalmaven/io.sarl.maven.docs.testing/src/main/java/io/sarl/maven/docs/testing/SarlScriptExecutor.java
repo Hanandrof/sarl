@@ -66,8 +66,6 @@ public class SarlScriptExecutor implements ScriptExecutor {
 
 	private String classpath = Strings.emptyIfNull(null);
 
-	private String bootClasspath = Strings.emptyIfNull(null);
-
 	private String sourceVersion = Strings.emptyIfNull(null);
 
 	private Provider<SarlBatchCompiler> compilerProvider;
@@ -92,11 +90,6 @@ public class SarlScriptExecutor implements ScriptExecutor {
 	@Override
 	public void setClassPath(String classpath) {
 		this.classpath = Strings.emptyIfNull(classpath);
-	}
-
-	@Override
-	public void setBootClassPath(String classpath) {
-		this.bootClasspath = Strings.emptyIfNull(classpath);
 	}
 
 	@Override
@@ -143,7 +136,6 @@ public class SarlScriptExecutor implements ScriptExecutor {
 		compiler.setGenerateSyntheticSuppressWarnings(true);
 		compiler.setCleaningPolicy(CleaningPolicy.NO_CLEANING);
 		compiler.setClassPath(this.classpath);
-		compiler.setBootClassPath(this.bootClasspath);
 		compiler.setJavaSourceVersion(this.sourceVersion);
 		compiler.setAllWarningSeverities(Severity.IGNORE);
 		compiler.setWarningSeverity(IssueCodes.DEPRECATED_MEMBER_REFERENCE, Severity.ERROR);

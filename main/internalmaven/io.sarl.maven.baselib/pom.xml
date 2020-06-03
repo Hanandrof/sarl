@@ -25,7 +25,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.xtend</groupId>
-			<artifactId>org.eclipse.xtend.core</artifactId>
+			<artifactId>org.eclipse.xtend.lib</artifactId>
 		</dependency>
 		<!-- Force the version of Guava because the Xbase is no more forcing a 
 			specific version (version range use) and its transitive dependencies -->
@@ -68,6 +68,21 @@
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Automatic-Module-Name>${project.artifactId}</Automatic-Module-Name>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 	<!-- ======================================= -->
 	<!-- ==== Release Management === -->

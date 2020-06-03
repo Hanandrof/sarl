@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -216,13 +217,13 @@ public final class TestUtils {
 	public static boolean isEpsilonEquals(BigDecimal v1, BigDecimal v2, int precision) {
 		final BigDecimal ma = v1.movePointRight(precision);
 		final BigDecimal mb = v2.movePointRight(precision);
-		BigDecimal aa = ma.setScale(0, BigDecimal.ROUND_HALF_UP);
-		BigDecimal bb = mb.setScale(0, BigDecimal.ROUND_HALF_UP);
+		BigDecimal aa = ma.setScale(0, RoundingMode.HALF_UP);
+		BigDecimal bb = mb.setScale(0, RoundingMode.HALF_UP);
 		if (aa.compareTo(bb) == 0) {
 			return true;
 		}
-		aa = ma.setScale(0, BigDecimal.ROUND_DOWN);
-		bb = mb.setScale(0, BigDecimal.ROUND_DOWN);
+		aa = ma.setScale(0, RoundingMode.HALF_DOWN);
+		bb = mb.setScale(0, RoundingMode.HALF_DOWN);
 		return aa.compareTo(bb) == 0;
 	}
 

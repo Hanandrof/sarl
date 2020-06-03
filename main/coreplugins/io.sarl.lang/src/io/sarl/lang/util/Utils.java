@@ -26,6 +26,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
@@ -76,6 +77,7 @@ import org.eclipse.xtext.nodemodel.ICompositeNode;
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
 import org.eclipse.xtext.serializer.ISerializer;
 import org.eclipse.xtext.util.EmfFormatter;
+import org.eclipse.xtext.util.JavaVersion;
 import org.eclipse.xtext.util.XtextVersion;
 import org.eclipse.xtext.xbase.XAbstractFeatureCall;
 import org.eclipse.xtext.xbase.XExpression;
@@ -84,6 +86,7 @@ import org.eclipse.xtext.xbase.XMemberFeatureCall;
 import org.eclipse.xtext.xbase.XVariableDeclaration;
 import org.eclipse.xtext.xbase.annotations.xAnnotations.XAnnotation;
 import org.eclipse.xtext.xbase.annotations.xAnnotations.XAnnotationElementValuePair;
+import org.eclipse.xtext.xbase.compiler.GeneratorConfig;
 import org.eclipse.xtext.xbase.compiler.ImportManager;
 import org.eclipse.xtext.xbase.jvmmodel.JvmTypeReferenceBuilder;
 import org.eclipse.xtext.xbase.jvmmodel.JvmTypesBuilder;
@@ -1181,7 +1184,7 @@ public final class Utils {
 	 *     is too old.
 	 * @deprecated see {@link #getSARLLibraryVersionOnClasspath(TypeReferences, Notifier, OutParameter)}
 	 */
-	@Deprecated
+	@Deprecated(since = "0.9", forRemoval = true)
 	public static String getSARLLibraryVersionOnClasspath(TypeReferences typeReferences, Notifier context) {
 		final OutParameter<String> version = new OutParameter<>();
 		final SarlLibraryErrorCode code = getSARLLibraryVersionOnClasspath(typeReferences, context, version);
@@ -1841,6 +1844,30 @@ public final class Utils {
 			}
 		}
 		return false;
+	}
+
+	/** Change the version of the Java source to be used for the generated Java files.
+	 * This function is defined in order to hide the type {@code JavaVersion} to the caller,
+	 * that may cause issues with JMS.
+	 *
+	 * TODO: Remove this function when the JavaVersion could be used, i.e. the org.eclipse.xtext.util is not anymore provided by two modules.
+	 *
+	 * @param config the configuration to change.
+	 * @param version the Java version.
+	 * @return the list of the valid versions if the given version is no valid.
+	 * @since 0.12
+	 */
+	public static List<String> setJavaSourceVersion(GeneratorConfig config, String version) {
+		final JavaVersion javaVersion = JavaVersion.fromQualifier(version);
+		if (javaVersion == null) {
+			final List<String> qualifiers = new ArrayList<>();
+			for (final JavaVersion vers : JavaVersion.values()) {
+				qualifiers.addAll(vers.getAllQualifiers());
+			}
+			return qualifiers;
+		}
+		config.setJavaSourceVersion(javaVersion);
+		return Collections.emptyList();
 	}
 
 }

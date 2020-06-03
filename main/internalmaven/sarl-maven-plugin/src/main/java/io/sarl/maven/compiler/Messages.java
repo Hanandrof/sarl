@@ -42,6 +42,7 @@ public class Messages extends NLS {
 	public static String MavenHelper_3;
 	public static String InitializeMojo_0;
 	public static String InitializeMojo_1;
+	public static String InitializeMojo_2;
 	public static String CompileMojo_0;
 	public static String CompileMojo_1;
 	public static String CompileMojo_2;

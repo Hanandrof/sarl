@@ -43,19 +43,21 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+
 import javax.inject.Provider;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
-import com.google.inject.ImplementedBy;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -91,7 +93,6 @@ import org.eclipse.xtext.util.Files;
 import org.eclipse.xtext.util.JavaVersion;
 import org.eclipse.xtext.util.Strings;
 import org.eclipse.xtext.util.UriUtil;
-import org.eclipse.xtext.util.internal.AlternateJdkLoader;
 import org.eclipse.xtext.validation.CheckMode;
 import org.eclipse.xtext.validation.IResourceValidator;
 import org.eclipse.xtext.validation.Issue;
@@ -138,8 +139,6 @@ public class SarlBatchCompiler {
 
 	private static final Predicate<IExtraLanguageContribution> DISABLER = it -> false;
 
-	private static Class<? extends IJavaBatchCompiler> defaultJavaBatchCompiler;
-
 	/** The provider of resource sets.
 	 */
 	protected Provider<ResourceSet> resourceSetProvider;
@@ -151,8 +150,6 @@ public class SarlBatchCompiler {
 	private File tempPath;
 
 	private CleaningPolicy cleaningPolicy = CleaningPolicy.getDefault();
-
-	private List<File> bootClasspath;
 
 	private List<File> classpath;
 
@@ -273,16 +270,13 @@ public class SarlBatchCompiler {
 	 */
 	public static IJavaBatchCompiler newDefaultJavaBatchCompiler() {
 		try {
-			synchronized (SarlBatchCompiler.class) {
-				if (defaultJavaBatchCompiler == null) {
-					final ImplementedBy annotation = IJavaBatchCompiler.class.getAnnotation(ImplementedBy.class);
-					assert annotation != null;
-					final Class<?> type = annotation.value();
-					assert type != null;
-					defaultJavaBatchCompiler = type.asSubclass(IJavaBatchCompiler.class);
-				}
-				return defaultJavaBatchCompiler.newInstance();
+			final ServiceLoader<IJavaBatchCompilerFactory> loader = ServiceLoader.load(IJavaBatchCompilerFactory.class, ClassLoader.getSystemClassLoader());
+			final Optional<IJavaBatchCompilerFactory> compilerOpt = loader.findFirst();
+			if (compilerOpt.isEmpty()) {
+				throw new RuntimeException("cannot find bach comiler definition"); //$NON-NLS-1$
 			}
+			final IJavaBatchCompilerFactory factory = compilerOpt.get();
+			return factory.createBatchCompiler();
 		} catch (Exception exception) {
 			throw new RuntimeException(exception);
 		}
@@ -677,62 +671,6 @@ public class SarlBatchCompiler {
 		this.classOutputPath = path;
 	}
 
-	/** Change the boot classpath.
-	 * This option is only supported on JDK 8 and older and will be ignored when source level is 9 or newer.
-	 *
-	 * <p>The boot classpath is a list the names of folders or jar files that are separated by {@link File#pathSeparator}.
-	 *
-	 * @param bootClasspath the new boot classpath.
-	 * @see "https://www.oracle.com/technetwork/java/javase/9-relnote-issues-3704069.html"
-	 */
-	public void setBootClassPath(String bootClasspath) {
-		final JavaVersion version = JavaVersion.fromQualifier(getJavaSourceVersion());
-		if (version.isAtLeast(JavaVersion.JAVA9)) {
-			reportInternalWarning(MessageFormat.format(Messages.SarlBatchCompiler_63, bootClasspath));
-		}
-		if (Strings.isEmpty(bootClasspath)) {
-			this.bootClasspath = null;
-		} else {
-			this.bootClasspath = new ArrayList<>();
-			for (final String path : Strings.split(bootClasspath, File.pathSeparator)) {
-				this.bootClasspath.add(normalizeFile(path));
-			}
-		}
-	}
-
-	/** Change the boot classpath.
-	 * This option is only supported on JDK 8 and older and will be ignored when source level is 9 or newer.
-	 *
-	 * @param bootClasspath the new boot classpath.
-	 * @see "https://www.oracle.com/technetwork/java/javase/9-relnote-issues-3704069.html"
-	 */
-	public void setBootClassPath(Collection<File> bootClasspath) {
-		final JavaVersion version = JavaVersion.fromQualifier(getJavaSourceVersion());
-		if (version.isAtLeast(JavaVersion.JAVA9)) {
-			reportInternalWarning(MessageFormat.format(Messages.SarlBatchCompiler_63,
-					Joiner.on(File.pathSeparator).join(bootClasspath)));
-		}
-		if (bootClasspath == null || bootClasspath.isEmpty()) {
-			this.bootClasspath = null;
-		} else {
-			this.bootClasspath = new ArrayList<>(bootClasspath);
-		}
-	}
-
-	/** Replies the boot classpath.
-	 * This option is only supported on JDK 8 and older and will be ignored when source level is 9 or newer.
-	 *
-	 * @return the boot classpath.
-	 * @see "https://www.oracle.com/technetwork/java/javase/9-relnote-issues-3704069.html"
-	 */
-	@Pure
-	public List<File> getBootClassPath() {
-		if (this.bootClasspath == null) {
-			return Collections.emptyList();
-		}
-		return Collections.unmodifiableList(this.bootClasspath);
-	}
-
 	/** Change the classpath.
 	 *
 	 * <p>The classpath is a list the names of folders or jar files that are separated by {@link File#pathSeparator}.
@@ -836,7 +774,7 @@ public class SarlBatchCompiler {
 	 * @deprecated since 0.10, see {@link #getCleaningPolicy()}.
 	 */
 	@Pure
-	@Deprecated
+	@Deprecated(since = "0.10", forRemoval = true)
 	@Inline(value = "getCleaningPolicy() != $1.NO_CLEANING", imported = {CleaningPolicy.class})
 	public boolean isDeleteTempDirectory() {
 		return getCleaningPolicy() != CleaningPolicy.NO_CLEANING;
@@ -847,7 +785,7 @@ public class SarlBatchCompiler {
 	 * @param delete <code>true</code> if the temp folder is deleted.
 	 * @deprecated since 0.10, see {@link #setCleaningPolicy(CleaningPolicy)}.
 	 */
-	@Deprecated
+	@Deprecated(since = "0.10", forRemoval = true)
 	@Inline(value = "setCleaningPolicy(($1) ? $2.INTERNAL_CLEANING : $2.NO_CLEANING)", imported = {CleaningPolicy.class})
 	public void setDeleteTempDirectory(boolean delete) {
 		setCleaningPolicy(delete ? CleaningPolicy.INTERNAL_CLEANING : CleaningPolicy.NO_CLEANING);
@@ -1810,7 +1748,6 @@ public class SarlBatchCompiler {
 				classDirectory,
 				sourcePathDirectories,
 				classPathEntries,
-				getBootClassPath(),
 				getJavaSourceVersion(),
 				encoding,
 				isJavaCompilerVerbose(),
@@ -2230,10 +2167,8 @@ public class SarlBatchCompiler {
 		final ClassLoader parentClassLoader;
 		if (isUseCurrentClassLoaderAsParent()) {
 			parentClassLoader = getClass().getClassLoader();
-		} else if (getBootClassPath().isEmpty()) {
-			parentClassLoader = getCurrentClassLoader();
 		} else {
-			parentClassLoader = new AlternateJdkLoader(getBootClassPath());
+			parentClassLoader = getCurrentClassLoader();
 		}
 		if (progress.isCanceled()) {
 			return;

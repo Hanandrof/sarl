@@ -51,7 +51,7 @@ public final class SarlDocletTester {
 			System.setProperty("http.proxyPort", "3128"); //$NON-NLS-1$ //$NON-NLS-2$
 			Main.execute(new String[] {
 				"-private", //$NON-NLS-1$
-				"-source", "1.8", //$NON-NLS-1$ //$NON-NLS-2$
+				"-source", "11", //$NON-NLS-1$ //$NON-NLS-2$
 				"-doclet", SarlDoclet.class.getName(), //$NON-NLS-1$
 				"-sourcepath", "/home/sgalland/git/sarl/main/coreplugins/io.sarl.lang.core/src", //$NON-NLS-1$ //$NON-NLS-2$
 				//"-sourcepath", "/home/sgalland/git/sarl/main/apiplugins/io.sarl.core/src-gen", //$NON-NLS-1$ //$NON-NLS-2$

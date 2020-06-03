@@ -31,7 +31,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
@@ -51,13 +50,8 @@ import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.shared.utils.io.DirectoryScanner;
-import org.apache.maven.toolchain.Toolchain;
 import org.apache.maven.toolchain.ToolchainManager;
-import org.apache.maven.toolchain.ToolchainPrivate;
-import org.apache.maven.toolchain.java.JavaToolchain;
 import org.arakhne.afc.vmutil.FileSystem;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.eclipse.xtext.Constants;
 import org.eclipse.xtext.util.JavaVersion;
 import org.eclipse.xtext.util.Strings;
@@ -404,10 +398,6 @@ public abstract class AbstractDocumentationMojo extends AbstractMojo {
 			cp.append(cpElement.getAbsolutePath());
 		}
 		scriptExecutor.setClassPath(cp.toString());
-		final String bootPath = getBootClassPath();
-		if (!Strings.isEmpty(bootPath)) {
-			scriptExecutor.setBootClassPath(bootPath);
-		}
 		JavaVersion version = null;
 		if (!Strings.isEmpty(this.source)) {
 			version = JavaVersion.fromQualifier(this.source);
@@ -555,68 +545,6 @@ public abstract class AbstractDocumentationMojo extends AbstractMojo {
 			}
 		}
 		return files;
-	}
-
-	/** Replies the boot classpath.
-	 *
-	 * @return the boot classpath.
-	 * @throws IOException in case of error.
-	 */
-	protected String getBootClassPath() throws IOException {
-		final Toolchain toolchain = this.toolchainManager.getToolchainFromBuildContext("jdk", this.session); //$NON-NLS-1$
-		if (toolchain instanceof JavaToolchain && toolchain instanceof ToolchainPrivate) {
-			final JavaToolchain javaToolChain = (JavaToolchain) toolchain;
-			final ToolchainPrivate privateJavaToolChain = (ToolchainPrivate) toolchain;
-			String[] includes = {"jre/lib/*", "jre/lib/ext/*", "jre/lib/endorsed/*"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			String[] excludes = new String[0];
-			final Xpp3Dom config = (Xpp3Dom) privateJavaToolChain.getModel().getConfiguration();
-			if (config != null) {
-				final Xpp3Dom bootClassPath = config.getChild("bootClassPath"); //$NON-NLS-1$
-				if (bootClassPath != null) {
-					final Xpp3Dom includeParent = bootClassPath.getChild("includes"); //$NON-NLS-1$
-					if (includeParent != null) {
-						includes = getValues(includeParent.getChildren("include")); //$NON-NLS-1$
-					}
-					final Xpp3Dom excludeParent = bootClassPath.getChild("excludes"); //$NON-NLS-1$
-					if (excludeParent != null) {
-						excludes = getValues(excludeParent.getChildren("exclude")); //$NON-NLS-1$
-					}
-				}
-			}
-
-			try {
-				return scanBootclasspath(Objects.toString(this.reflect.invoke(javaToolChain, "getJavaHome")), includes, excludes); //$NON-NLS-1$
-			} catch (Exception e) {
-				throw new IOException(e.getLocalizedMessage(), e);
-			}
-		}
-		return ""; //$NON-NLS-1$
-	}
-
-	private static String scanBootclasspath(String javaHome, String[] includes, String[] excludes) {
-		final DirectoryScanner scanner = new DirectoryScanner();
-		scanner.setBasedir(new File(javaHome));
-		scanner.setIncludes(includes);
-		scanner.setExcludes(excludes);
-		scanner.scan();
-
-		final StringBuilder bootClassPath = new StringBuilder();
-		final String[] includedFiles = scanner.getIncludedFiles();
-		for (int i = 0; i < includedFiles.length; i++) {
-			if (i > 0) {
-				bootClassPath.append(File.pathSeparator);
-			}
-			bootClassPath.append(new File(javaHome, includedFiles[i]).getAbsolutePath());
-		}
-		return bootClassPath.toString();
-	}
-
-	private static String[] getValues(Xpp3Dom[] children) {
-		final String[] values = new String[children.length];
-		for (int i = 0; i < values.length; i++) {
-			values[i] = children[i].getValue();
-		}
-		return values;
 	}
 
 }

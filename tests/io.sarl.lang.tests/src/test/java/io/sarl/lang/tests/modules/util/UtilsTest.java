@@ -262,14 +262,20 @@ public class UtilsTest extends AbstractSarlTest {
 		assertFalse(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("1.5"));
 		assertFalse(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("1.6"));
 		assertFalse(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("1.7"));
-		assertTrue(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("1.8"));
-		assertTrue(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("1.8.1"));
-		assertTrue(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("1.8.9"));
-		assertTrue(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("1.9"));
-		assertTrue(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("9"));
-		assertTrue(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("10"));
+		assertFalse(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("1.8"));
+		assertFalse(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("1.8.1"));
+		assertFalse(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("1.8.9"));
+		assertFalse(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("1.9"));
+		assertFalse(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("9"));
+		assertFalse(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("10"));
 		assertTrue(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("11"));
+		assertTrue(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("11.1"));
+		assertTrue(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("11.9"));
 		assertFalse(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("12"));
+		assertFalse(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("13"));
+		assertFalse(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("14"));
+		assertFalse(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("15"));
+		assertFalse(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("16"));
 	}
 
 	@Test
@@ -278,14 +284,20 @@ public class UtilsTest extends AbstractSarlTest {
 		assertFalse(Utils.isCompatibleJDKVersionWhenInSARLProjectClasspath("1.5"));
 		assertFalse(Utils.isCompatibleJDKVersionWhenInSARLProjectClasspath("1.6"));
 		assertFalse(Utils.isCompatibleJDKVersionWhenInSARLProjectClasspath("1.7"));
-		assertTrue(Utils.isCompatibleJDKVersionWhenInSARLProjectClasspath("1.8"));
-		assertTrue(Utils.isCompatibleJDKVersionWhenInSARLProjectClasspath("1.8.1"));
-		assertTrue(Utils.isCompatibleJDKVersionWithSARLCompilationEnvironment("1.8.9"));
-		assertTrue(Utils.isCompatibleJDKVersionWhenInSARLProjectClasspath("1.9"));
-		assertTrue(Utils.isCompatibleJDKVersionWhenInSARLProjectClasspath("9"));
-		assertTrue(Utils.isCompatibleJDKVersionWhenInSARLProjectClasspath("10"));
+		assertFalse(Utils.isCompatibleJDKVersionWhenInSARLProjectClasspath("1.8"));
+		assertFalse(Utils.isCompatibleJDKVersionWhenInSARLProjectClasspath("1.8.1"));
+		assertFalse(Utils.isCompatibleJDKVersionWhenInSARLProjectClasspath("1.8.9"));
+		assertFalse(Utils.isCompatibleJDKVersionWhenInSARLProjectClasspath("1.9"));
+		assertFalse(Utils.isCompatibleJDKVersionWhenInSARLProjectClasspath("9"));
+		assertFalse(Utils.isCompatibleJDKVersionWhenInSARLProjectClasspath("10"));
 		assertTrue(Utils.isCompatibleJDKVersionWhenInSARLProjectClasspath("11"));
+		assertTrue(Utils.isCompatibleJDKVersionWhenInSARLProjectClasspath("11.1"));
+		assertTrue(Utils.isCompatibleJDKVersionWhenInSARLProjectClasspath("11.9"));
 		assertFalse(Utils.isCompatibleJDKVersionWhenInSARLProjectClasspath("12"));
+		assertFalse(Utils.isCompatibleJDKVersionWhenInSARLProjectClasspath("13"));
+		assertFalse(Utils.isCompatibleJDKVersionWhenInSARLProjectClasspath("14"));
+		assertFalse(Utils.isCompatibleJDKVersionWhenInSARLProjectClasspath("15"));
+		assertFalse(Utils.isCompatibleJDKVersionWhenInSARLProjectClasspath("16"));
 	}
 
 	@Test

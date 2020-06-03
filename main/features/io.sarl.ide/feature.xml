@@ -223,6 +223,8 @@ tools upon the Eclipse IDE.
    </url>
 
    <requires>
+      <import plugin="io.sarl.lang.core" version="0.12.0" match="greaterOrEqual"/>
+      <import plugin="io.sarl.lang" version="0.12.0" match="greaterOrEqual"/>
       <import plugin="io.sarl.lang.ui" version="0.12.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.xtend.core" version="2.20.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.xtext.ui" version="2.20.0" match="greaterOrEqual"/>
@@ -277,6 +279,18 @@ tools upon the Eclipse IDE.
       <import plugin="org.eclipse.xtext"/>
       <import plugin="org.eclipse.ui.workbench" version="3.117.0" match="greaterOrEqual"/>
       <import plugin="slf4j.api" version="2.0.0.alpha1" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.xtext.ide" version="2.20.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.xtext.xbase.ide" version="2.20.0" match="greaterOrEqual"/>
+      <import plugin="io.sarl.lang.ide" version="0.12.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.compare" version="3.7.800" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.editors" version="3.13.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.xtext.builder" version="2.20.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.xtext.ui.codetemplates.ui" version="2.20.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.xtext.ui.shared" version="2.20.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.xtend.ide" version="2.20.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.forms" version="3.8.200" match="greaterOrEqual"/>
+      <import plugin="org.apache.log4j"/>
+      <import plugin="org.antlr.runtime" version="3.2.0" match="greaterOrEqual"/>
    </requires>
 
    <plugin
@@ -327,6 +341,20 @@ tools upon the Eclipse IDE.
          install-size="0"
          version="0.0.0"
          fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="io.sarl.lang.ide"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="io.sarl.lang.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>

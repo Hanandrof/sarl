@@ -23,16 +23,11 @@ package io.sarl.lang.compiler.batch;
 
 import java.io.File;
 import java.io.PrintWriter;
-import java.util.List;
 
-import com.google.inject.ImplementedBy;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.slf4j.Logger;
 
 /** An object that represents a Java compiler.
- *
- * <p>By default, the {@link EcjBatchCompiler Eclipse Compiler for Java is used} in order
- * to generate byte code that is the same as inside the SARL IDE.
  *
  * @author $Author: sgalland$
  * @version $FullVersion$
@@ -40,7 +35,6 @@ import org.slf4j.Logger;
  * @mavenartifactid $ArtifactId$
  * @since 0.8
  */
-@ImplementedBy(EcjBatchCompiler.class)
 public interface IJavaBatchCompiler {
 
 	/** Run the Java compiler.
@@ -48,8 +42,7 @@ public interface IJavaBatchCompiler {
 	 * @param classDirectory the output directory.
 	 * @param sourcePathDirectories the source directories.
 	 * @param classPathEntries classpath entries.
-	 * @param bootClassPathEntries the classpath entries for the boot.
-	 * @param javaVersion the version of Java that is the target, e.g. {@code 1.8}.
+	 * @param javaVersion the version of Java that is the target, e.g. {@code 11}.
 	 * @param encoding the encoding of the files.
 	 * @param isCompilerMoreVerbose indicates if the Java compiler should be more verbose.
 	 * @param optimizationLevel the level of optimization to apply to the byte code or {@code null} if the defaults must be applied.
@@ -62,7 +55,6 @@ public interface IJavaBatchCompiler {
 	@SuppressWarnings("checkstyle:parameternumber")
 	boolean compile(File classDirectory, Iterable<File> sourcePathDirectories,
 			Iterable<File> classPathEntries,
-			List<File> bootClassPathEntries,
 			String javaVersion,
 			String encoding,
 			boolean isCompilerMoreVerbose,

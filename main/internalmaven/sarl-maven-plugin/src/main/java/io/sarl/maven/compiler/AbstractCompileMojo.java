@@ -24,12 +24,16 @@ package io.sarl.maven.compiler;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.google.common.base.Strings;
 import org.apache.maven.artifact.Artifact;
@@ -55,6 +59,16 @@ public abstract class AbstractCompileMojo extends AbstractSarlBatchCompilerMojo 
 
 	private static final String STUB_FOLDER = "sarl-temp"; //$NON-NLS-1$
 
+	/**
+	 * @since 0.12
+	 */
+	private static final String CONFLICTING_JAR_PATTERN = "^java([0-9]+)api\\.jar$"; //$NON-NLS-1$
+
+	/**
+	 * @since 0.12
+	 */
+	private static final String NUM_PATTERN = "^([0-9]+)"; //$NON-NLS-1$
+
 	/** Version of the Java specification used for the source files.
 	 */
 	@Parameter(defaultValue = SARLVersion.MINIMAL_JDK_VERSION_IN_SARL_PROJECT_CLASSPATH, required = false)
@@ -70,13 +84,6 @@ public abstract class AbstractCompileMojo extends AbstractSarlBatchCompilerMojo 
 	 */
 	@Parameter
 	private File tempDirectory;
-
-	/** Indicates if the Java compiler must be invoked by the SARL maven plugin.
-	 * @deprecated see {@link #javaCompiler} for replacement.
-	 */
-	@Parameter(defaultValue = "true", required = false)
-	@Deprecated
-	private boolean runJavaCompiler;
 
 	/** Indicates the Java compiler to be invoked by the SARL maven plugin.
 	 */
@@ -149,6 +156,70 @@ public abstract class AbstractCompileMojo extends AbstractSarlBatchCompilerMojo 
 	private String optimization;
 
 	private OptimizationLevel optimizationInstance;
+
+	/** Indicates if the JRE must be first on the classpath.
+	 * @since 0.12
+	 */
+	@Parameter(defaultValue = "false")
+	private boolean fixClasspathJdtJse;
+
+	/** Fix the classpath because the JDT libraries that are included by tycho
+	 * automatically add "javaXapi.jar" on the classpath. Sometimes, the
+	 * included jar files contains API for newer JSE, that causes incompatible
+	 * class format.
+	 *
+	 * @since 0.12
+	 */	
+	private List<File> fixJreClassPath(List<File> currentClassPath) {
+		final Pattern conflictPattern = Pattern.compile(CONFLICTING_JAR_PATTERN);
+		final Pattern numPattern = Pattern.compile(NUM_PATTERN);
+		final List<File> newClassPath = new ArrayList<>(currentClassPath.size());
+
+		final int currentVersion = parseInt(numPattern, System.getProperty("java.version"));
+		for (final File file : currentClassPath) {
+			final String basename = file.getName();
+			final Matcher matcher = conflictPattern.matcher(basename);
+			if (matcher.find()) {
+				final int version = parseInt(numPattern, matcher.group(1));
+				if (version <= currentVersion) {
+					newClassPath.add(file);
+				} else {
+					getLog().info(MessageFormat.format(Messages.InitializeMojo_2, file.getName()));
+				}
+			} else {
+				newClassPath.add(file);
+			}
+		}
+		return newClassPath;
+	}
+
+	private static int parseInt(Pattern pattern, String text) {
+		final Matcher matcher = pattern.matcher(text);
+		if (matcher.find()) {
+			try {
+				return Integer.parseInt(matcher.group(1));
+			} catch (Throwable ex) {
+				//
+			}
+		}
+		return 0;
+	}
+
+	@Override
+	protected List<File> buildClassPath() throws MojoExecutionException {
+		if (this.fixClasspathJdtJse) {
+			return fixJreClassPath(super.buildClassPath());
+		}
+		return super.buildClassPath();
+	}
+	
+	@Override
+	protected List<File> buildTestClassPath() throws MojoExecutionException {
+		if (this.fixClasspathJdtJse) {
+			return fixJreClassPath(super.buildTestClassPath());
+		}
+		return super.buildTestClassPath();
+	}
 
 	@Override
 	protected String[] getExtraGenerators() {
@@ -275,7 +346,7 @@ public abstract class AbstractCompileMojo extends AbstractSarlBatchCompilerMojo 
 		buffer.append("source = ").append(this.source).append("\n"); //$NON-NLS-1$//$NON-NLS-2$
 		buffer.append("encoding = ").append(this.encoding).append("\n"); //$NON-NLS-1$//$NON-NLS-2$
 		buffer.append("tempDirectory = ").append(this.tempDirectory).append("\n"); //$NON-NLS-1$//$NON-NLS-2$
-		buffer.append("runJavaCompiler = ").append(this.runJavaCompiler).append("\n"); //$NON-NLS-1$//$NON-NLS-2$
+		buffer.append("runJavaCompiler = ").append(this.javaCompiler).append("\n"); //$NON-NLS-1$//$NON-NLS-2$
 		buffer.append("generateInlines = ").append(this.generateInlines).append("\n"); //$NON-NLS-1$//$NON-NLS-2$
 		buffer.append("generateTraceFiles = ").append(this.generateTraceFiles).append("\n"); //$NON-NLS-1$//$NON-NLS-2$
 		buffer.append("generateStorageFiles = ").append(this.generateStorageFiles).append("\n"); //$NON-NLS-1$//$NON-NLS-2$

@@ -477,12 +477,6 @@ public class GenerateTestsMojo extends AbstractDocumentationMojo {
 		}
 		it.append("scriptExecutor.setClassPath(\"").append(str(cp)).append("\");").newLine();
 
-		final String bootPath = getBootClassPath();
-		if (!Strings.isEmpty(bootPath)) {
-			it.append("scriptExecutor.setBootClassPath(\"") //$NON-NLS-1$
-				.append(str(bootPath)).append("\");") //$NON-NLS-1$
-				.newLine();
-		}
 		JavaVersion version = null;
 		if (!Strings.isEmpty(this.source)) {
 			try {

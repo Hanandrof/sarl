@@ -347,7 +347,7 @@ class BehaviorGuardEvaluatorRegistry {
 	 * @since 0.5
 	 * @deprecated since 0.11, see {@link #getRegisteredEventListeners(Class,Set)}.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "0.11")
 	def getRegisteredEventListeners(type : Class<T>, collection : Collection<? super T>) : int with T {
 		assert type !== null
 		assert collection !== null

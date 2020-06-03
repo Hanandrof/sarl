@@ -14,8 +14,8 @@
 	<name>Parent Product Definitions for SARL</name>
 
 	<modules>
-		<module>sarlc</module>
-		<module>sarldoc</module>
+		<!-- <module>sarlc</module> -->
+		<!--<module>sarldoc</module>-->
 	</modules>
 
 	<profiles>

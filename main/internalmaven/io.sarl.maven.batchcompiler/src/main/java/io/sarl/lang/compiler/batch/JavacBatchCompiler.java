@@ -26,10 +26,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ServiceLoader;
+
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 
@@ -37,7 +41,6 @@ import com.google.common.collect.Lists;
 import com.google.inject.Singleton;
 import org.apache.commons.io.output.WriterOutputStream;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.xtext.util.JavaVersion;
 import org.eclipse.xtext.util.Strings;
 import org.slf4j.Logger;
 
@@ -57,7 +60,6 @@ public class JavacBatchCompiler implements IJavaBatchCompiler {
 		"checkstyle:npathcomplexity", "resource" })
 	public boolean compile(File classDirectory, Iterable<File> sourcePathDirectories,
 			Iterable<File> classPathEntries,
-			List<File> bootClassPathEntries,
 			String javaVersion,
 			String encoding,
 			boolean isCompilerMoreVerbose,
@@ -88,30 +90,6 @@ public class JavacBatchCompiler implements IJavaBatchCompiler {
 		}
 		if (progress.isCanceled()) {
 			return false;
-		}
-		if (!bootClassPathEntries.isEmpty() && !Strings.isEmpty(javaVersion)) {
-			final JavaVersion jversion = JavaVersion.fromQualifier(javaVersion);
-			if (!jversion.isAtLeast(JavaVersion.JAVA9)) {
-				final StringBuilder cmd = new StringBuilder();
-				boolean first = true;
-				for (final File entry : bootClassPathEntries) {
-					if (progress.isCanceled()) {
-						return false;
-					}
-					if (entry.exists()) {
-						if (first) {
-							first = false;
-						} else {
-							cmd.append(File.pathSeparator);
-						}
-						cmd.append(entry.getAbsolutePath());
-					}
-				}
-				if (cmd.length() > 0) {
-					commandLineArguments.add("-bootclasspath"); //$NON-NLS-1$
-					commandLineArguments.add(cmd.toString());
-				}
-			}
 		}
 		final Iterator<File> classPathIterator = classPathEntries.iterator();
 		if (classPathIterator.hasNext()) {
@@ -181,9 +159,34 @@ public class JavacBatchCompiler implements IJavaBatchCompiler {
 
 		final OutputStream stderr = new JavacErrorStream(errWriter, logger);
 
-		final JavaCompiler systemCompiler = ToolProvider.getSystemJavaCompiler();
+		final JavaCompiler systemCompiler = getSystemJavaCompiler();
 		final int retcode = systemCompiler.run(null, stdout, stderr, arguments);
 		return retcode == 0;
+	}
+
+	/** Replies the JDK compiler.
+	 *
+	 * @return the JDK compiler.
+	 * @since 0.12
+	 */
+	protected JavaCompiler getSystemJavaCompiler() {
+		final PrivilegedAction<JavaCompiler> action = () -> ToolProvider.getSystemJavaCompiler();
+		final JavaCompiler standardCompiler = AccessController.doPrivileged(action);
+		if (standardCompiler == null) {
+			// This branch is defined for solving the problem introduced by JMS modules.
+			System.err.println("NO STANDARD COMPILER");
+            ServiceLoader<JavaCompiler> sl = ServiceLoader.load(JavaCompiler.class);
+            final Iterator<JavaCompiler> iter = sl.iterator();
+            while (iter.hasNext()) {
+                JavaCompiler tool = iter.next();
+    			System.err.println("FOUND EXTRA COMPILER: " + tool);
+                if (tool != null) {
+        			System.err.println("SELECT EXTRA COMPILER");
+                	return tool;
+                }
+            }
+		}
+		return standardCompiler;
 	}
 
 	private static boolean addJavaFilesDeeply(List<String> list, File root) {

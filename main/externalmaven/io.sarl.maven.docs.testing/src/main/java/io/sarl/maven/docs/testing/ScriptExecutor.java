@@ -53,12 +53,6 @@ public interface ScriptExecutor {
 	 */
 	void setClassPath(String classpath);
 
-	/** Change the boot classpath that the executor should used.
-	 *
-	 * @param classpath the boot classpath.
-	 */
-	void setBootClassPath(String classpath);
-
 	/** Change the version of the Java sources.
 	 *
 	 * @param version the version.

@@ -4,14 +4,14 @@
 	<locations>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<repository location="http://download.tuxfamily.org/arakhne/p2/"/>
-			<unit id="org.arakhne.afc.core.references" version="16.0.0"/>
-			<unit id="org.arakhne.afc.core.text" version="16.0.0"/>
-			<unit id="org.arakhne.afc.core.util" version="16.0.0"/>
-			<unit id="org.arakhne.afc.core.vmutils" version="16.0.0"/>
-			<unit id="org.arakhne.afc.core.inputoutput" version="16.0.0"/>
-			<unit id="io.bootique" version="1.0.0"/>
-			<unit id="org.arakhne.afc.bootique.log4j" version="16.0.0"/>
-			<unit id="org.arakhne.afc.bootique.variables" version="16.0.0"/>
+			<unit id="org.arakhne.afc.core.references" version="17.0.0"/>
+			<unit id="org.arakhne.afc.core.text" version="17.0.0"/>
+			<unit id="org.arakhne.afc.core.util" version="17.0.0"/>
+			<unit id="org.arakhne.afc.core.vmutils" version="17.0.0"/>
+			<unit id="org.arakhne.afc.core.inputoutput" version="17.0.0"/>
+			<unit id="io.bootique" version="1.1.0"/>
+			<unit id="org.arakhne.afc.bootique.log4j" version="17.0.0"/>
+			<unit id="org.arakhne.afc.bootique.variables" version="17.0.0"/>
 			<unit id="org.mockito.mockito-core" version="3.2.4"/>
 			<unit id="org.objenesis" version="2.6.0"/>						
 			<unit id="com.fasterxml.jackson.core.jackson-core" version="2.10.0.pr1"/>
@@ -25,6 +25,12 @@
 			<unit id="slf4j.api" version="2.0.0.alpha1"/>
 			<unit id="stax2-api" version="4.2.0"/>
 			<unit id="jul.to.slf4j" version="2.0.0.alpha1"/>
+			<unit id="org.arakhne.afc.bootique.applicationdata2" version="17.0.0"/>
+			<unit id="org.arakhne.afc.bootique.printconfig" version="17.0.0"/>
+			<unit id="org.arakhne.afc.bootique.synopsishelp" version="17.0.0"/>
+			<unit id="org.arakhne.afc.slf4j.backwardcompat" version="17.0.0"/>
+			<unit id="org.arakhne.afc.slf4j.log4j" version="17.0.0"/>
+			<unit id="slf4j.log4j12" version="2.0.0.alpha1"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<repository location="https://download.jboss.org/jbosstools/photon/snapshots/builds/m2e-apt/latest/all/repo/"/>
@@ -82,5 +88,5 @@
 			<unit id="net.sf.eclipsecs.feature.group" version="8.31.0.202004271730"/>
 		</location>
 	</locations>
-	<targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11"/>
 </target>

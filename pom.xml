@@ -24,28 +24,32 @@
 	<!-- ======================================= -->
 
 	<properties>
-		<!-- Java Configuration for compiling this project (useful for the SARL 
-			development team) -->
-		<sarl-dsl.min.jdk.version>1.8</sarl-dsl.min.jdk.version>
+		<!-- Java Configuration for compiling this project
+		     (useful for the SARL development team) -->
+		<sarl-dsl.min.jdk.version>11</sarl-dsl.min.jdk.version>
 		<sarl-dsl.min.jre.environment>JavaSE-${sarl-dsl.min.jdk.version}</sarl-dsl.min.jre.environment>
-		<sarl-dsl.max.jdk.version>1.8</sarl-dsl.max.jdk.version>
-		<sarl-dsl.next.unsupported.jdk.version>1.9</sarl-dsl.next.unsupported.jdk.version>
+		<sarl-dsl.max.jdk.version>11</sarl-dsl.max.jdk.version>
+		<sarl-dsl.next.unsupported.jdk.version>12</sarl-dsl.next.unsupported.jdk.version>
 
 		<!-- Java Configuration for running the SARL tools (IDE, sarlc, sarldoc...): 
-			*********** * CAUTION * *********** The versions below must include the versions 
-			for the properties "sarl-dsl.*" -->
-		<sarl-run.min.jdk.version>1.8</sarl-run.min.jdk.version>
+			*********** * CAUTION * ***********
+			The versions below must include the versions 
+			for the properties "sarl-dsl.*"
+		-->
+		<sarl-run.min.jdk.version>11</sarl-run.min.jdk.version>
 		<sarl-run.min.jre.environment>JavaSE-${sarl-run.min.jdk.version}</sarl-run.min.jre.environment>
 		<sarl-run.max.jdk.version>11</sarl-run.max.jdk.version>
-		<sarl-run.next.unsupported.jdk.version>12</sarl-run.next.unsupported.jdk.version>
+		<sarl-run.next.unsupported.jdk.version>14</sarl-run.next.unsupported.jdk.version>
 
-		<!-- Java Configuration that should be used by the projects compiled with 
-			SARL IDE or sarlc: *********** * CAUTION * *********** The versions below 
-			must include the versions for the properties "sarl-run.*" -->
-		<user.min.jdk.version>1.8</user.min.jdk.version>
+		<!-- Java Configuration that should be used by the projects compiled with SARL IDE or sarlc:
+			*********** * CAUTION * ***********
+			The versions below must include the versions
+			for the properties "sarl-run.*"
+		-->
+		<user.min.jdk.version>11</user.min.jdk.version>
 		<user.min.jre.environment>JavaSE-${user.min.jdk.version}</user.min.jre.environment>
 		<user.max.jdk.version>11</user.max.jdk.version>
-		<user.next.unsupported.jdk.version>12</user.next.unsupported.jdk.version>
+		<user.next.unsupported.jdk.version>14</user.next.unsupported.jdk.version>
 
 		<!-- Version of the SARL API -->
 		<sarl.version>0.12.0-SNAPSHOT</sarl.version>
@@ -71,7 +75,7 @@
 		<!-- Version of the OSGi module that provides the NLS (package: osgi) -->
 		<osgi.nls.version>3.10.0-v20140606-1445</osgi.nls.version>
 		<!-- Version of the Arakhne Foundation classes -->
-		<afc.version>16.0</afc.version>
+		<afc.version>17.0</afc.version>
 		<afc.osgi.version>${afc.version}.0</afc.osgi.version>
 		<!-- Version of the Guava API -->
 		<guava.version>27.1-jre</guava.version>
@@ -427,6 +431,11 @@
 				<version>${xtext.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.eclipse.xtend</groupId>
+				<artifactId>org.eclipse.xtend.lib</artifactId>
+				<version>${xtext.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.eclipse.xtext</groupId>
 				<artifactId>org.eclipse.xtext.testing</artifactId>
 				<version>${xtext.version}</version>
@@ -519,7 +528,7 @@
 			<dependency>
 				<groupId>io.bootique</groupId>
 				<artifactId>bootique</artifactId>
-				<version>1.0</version>
+				<version>1.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.javassist</groupId>
@@ -695,7 +704,6 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>${mavencompiler.version}</version>
 					<configuration>
-						<compilerId>jdt</compilerId>
 						<source>${sarl-dsl.min.jdk.version}</source>
 						<target>${sarl-dsl.min.jdk.version}</target>
 						<testSource>${sarl-dsl.min.jdk.version}</testSource>
@@ -704,13 +712,6 @@
 						<showDeprecation>false</showDeprecation>
 						<showWarnings>false</showWarnings>
 					</configuration>
-					<dependencies>
-						<dependency>
-							<groupId>org.eclipse.tycho</groupId>
-							<artifactId>tycho-compiler-jdt</artifactId>
-							<version>${tycho.version}</version>
-						</dependency>
-					</dependencies>
 				</plugin>
 
 				<plugin>
@@ -1387,12 +1388,16 @@
 	</profiles>
 
 	<repositories>
-		<!--<repository> <id>org.eclipse.xtext-snapshot</id> <snapshots> <enabled>true</enabled> 
-			</snapshots> <releases> <enabled>true</enabled> </releases> <url>https://oss.sonatype.org/content/repositories/snapshots</url> 
-			</repository> -->
-		<!--<repository> <id>org.arakhne-snapshot</id> <snapshots> <enabled>true</enabled> 
-			</snapshots> <releases> <enabled>true</enabled> </releases> <url>http://download.tuxfamily.org/arakhne/maven</url> 
-			</repository> -->
+		<repository>
+			<id>org.arakhne-snapshot</id>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<url>http://download.tuxfamily.org/arakhne/maven</url>
+		</repository>
 	</repositories>
 
 </project>

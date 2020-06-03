@@ -137,7 +137,6 @@ import io.sarl.lang.annotation.DefaultValueSource;
 import io.sarl.lang.annotation.DefaultValueUse;
 import io.sarl.lang.annotation.EarlyExit;
 import io.sarl.lang.annotation.FiredEvent;
-import io.sarl.lang.annotation.Generated;
 import io.sarl.lang.annotation.ImportedCapacityFeature;
 import io.sarl.lang.annotation.NoEqualityTestFunctionsGeneration;
 import io.sarl.lang.annotation.PerceptGuardEvaluator;
@@ -221,6 +220,8 @@ public class SARLJvmModelInferrer extends XtendJvmModelInferrer {
 	private static final String CLONE_FUNCTION_NAME = "clone"; //$NON-NLS-1$
 
 	private static final String SERIAL_FIELD_NAME = "serialVersionUID"; //$NON-NLS-1$
+
+	private static final String GENERATED_CLASSNAME = "javax.annotation.processing.Generated"; //$NON-NLS-1$
 
 	/** See the filter in the super class.
 	 */
@@ -376,6 +377,33 @@ public class SARLJvmModelInferrer extends XtendJvmModelInferrer {
 	 * @return the annotation reference or {@code null} if the annotation cannot be added.
 	 */
 	private JvmAnnotationReference addAnnotationSafe(JvmAnnotationTarget target, Class<?> annotationType, String... values) {
+		assert target != null;
+		assert annotationType != null;
+		try {
+			final JvmAnnotationReference annotationRef = this._annotationTypesBuilder.annotationRef(annotationType, values);
+			if (annotationRef != null) {
+				if (target.getAnnotations().add(annotationRef)) {
+					return annotationRef;
+				}
+			}
+		} catch (IllegalArgumentException exception) {
+			// Ignore
+		}
+		return null;
+	}
+
+	/** Add annotation safely.
+	 *
+	 * <p>This function creates an annotation reference. If the type for the annotation is not found;
+	 * no annotation is added.
+	 *
+	 * @param target the receiver of the annotation.
+	 * @param annotationType the type of the annotation.
+	 * @param values the annotations values.
+	 * @return the annotation reference or {@code null} if the annotation cannot be added.
+	 * @since 0.11
+	 */
+	private JvmAnnotationReference addAnnotationSafe(JvmAnnotationTarget target, String annotationType, String... values) {
 		assert target != null;
 		assert annotationType != null;
 		try {
@@ -1882,7 +1910,7 @@ public class SARLJvmModelInferrer extends XtendJvmModelInferrer {
 									&& !EarlyExit.class.getName().equals(id)
 									&& !FiredEvent.class.getName().equals(id)
 									&& !Inline.class.getName().equals(id)
-									&& !Generated.class.getName().equals(id)) {
+									&& !GENERATED_CLASSNAME.equals(id)) {
 								try {
 									final JvmAnnotationReference clone = SARLJvmModelInferrer.this._annotationTypesBuilder
 											.annotationRef(id);
@@ -2473,7 +2501,7 @@ public class SARLJvmModelInferrer extends XtendJvmModelInferrer {
 	protected void appendGeneratedAnnotation(JvmAnnotationTarget target, GenerationContext context, String sarlCode) {
 		final GeneratorConfig config = context.getGeneratorConfig();
 		if (config.isGenerateGeneratedAnnotation()) {
-			addAnnotationSafe(target, Generated.class, getClass().getName());
+			addAnnotationSafe(target, GENERATED_CLASSNAME, getClass().getName());
 		}
 
 		if (target instanceof JvmFeature) {

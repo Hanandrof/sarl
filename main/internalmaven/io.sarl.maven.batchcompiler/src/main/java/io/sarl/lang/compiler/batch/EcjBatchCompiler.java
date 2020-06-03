@@ -26,16 +26,15 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.inject.Singleton;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.compiler.CompilationProgress;
 import org.eclipse.jdt.core.compiler.batch.BatchCompiler;
-import org.eclipse.xtext.util.JavaVersion;
-import org.eclipse.xtext.util.Strings;
 import org.slf4j.Logger;
 
-/** A wrapper on top of the Eclipse Compiler for Java (ECJ).
+/** A wrapper on top of the Eclipse Compiler for Java (ECJ), aka. JDT.
  *
  * @author $Author: sgalland$
  * @version $FullVersion$
@@ -51,7 +50,6 @@ public class EcjBatchCompiler implements IJavaBatchCompiler {
 		"checkstyle:parameternumber" })
 	public boolean compile(File classDirectory, Iterable<File> sourcePathDirectories,
 			Iterable<File> classPathEntries,
-			List<File> bootClassPathEntries,
 			String javaVersion,
 			String encoding,
 			boolean isCompilerMoreVerbose,
@@ -83,30 +81,6 @@ public class EcjBatchCompiler implements IJavaBatchCompiler {
 		}
 		if (progress.isCanceled()) {
 			return false;
-		}
-		if (!bootClassPathEntries.isEmpty() && !Strings.isEmpty(javaVersion)) {
-			final JavaVersion jversion = JavaVersion.fromQualifier(javaVersion);
-			if (!jversion.isAtLeast(JavaVersion.JAVA9)) {
-				final StringBuilder cmd = new StringBuilder();
-				boolean first = true;
-				for (final File entry : bootClassPathEntries) {
-					if (progress.isCanceled()) {
-						return false;
-					}
-					if (entry.exists()) {
-						if (first) {
-							first = false;
-						} else {
-							cmd.append(File.pathSeparator);
-						}
-						cmd.append(entry.getAbsolutePath());
-					}
-				}
-				if (cmd.length() > 0) {
-					commandLineArguments.add("-bootclasspath"); //$NON-NLS-1$
-					commandLineArguments.add(cmd.toString());
-				}
-			}
 		}
 		final Iterator<File> classPathIterator = classPathEntries.iterator();
 		if (classPathIterator.hasNext()) {
@@ -141,7 +115,7 @@ public class EcjBatchCompiler implements IJavaBatchCompiler {
 		commandLineArguments.add(classDirectory.getAbsolutePath());
 		commandLineArguments.add("-" + javaVersion); //$NON-NLS-1$
 		commandLineArguments.add("-proceedOnError"); //$NON-NLS-1$
-		if (!Strings.isEmpty(encoding)) {
+		if (!Strings.isNullOrEmpty(encoding)) {
 			commandLineArguments.add("-encoding"); //$NON-NLS-1$
 			commandLineArguments.add(encoding);
 		}
@@ -162,7 +136,13 @@ public class EcjBatchCompiler implements IJavaBatchCompiler {
 		commandLineArguments.toArray(arguments);
 
 		if (logger != null && logger.isDebugEnabled()) {
-			logger.debug(Messages.EcjBatchCompiler_0, Strings.concat("\n", commandLineArguments)); //$NON-NLS-1$
+			final StringBuilder buf = new StringBuilder();
+			for (final String str : commandLineArguments) {
+				if (!Strings.isNullOrEmpty(str)) {
+					buf.append(str).append("\n"); //$NON-NLS-1$
+				}
+			}
+			logger.debug(Messages.EcjBatchCompiler_0, buf.toString());
 		}
 
 		if (progress.isCanceled()) {

@@ -30,9 +30,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
+
 import javax.inject.Provider;
 
 import com.google.common.collect.Iterables;
@@ -49,14 +49,8 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.shared.utils.io.DirectoryScanner;
-import org.apache.maven.toolchain.Toolchain;
 import org.apache.maven.toolchain.ToolchainManager;
-import org.apache.maven.toolchain.ToolchainPrivate;
-import org.apache.maven.toolchain.java.JavaToolchain;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.eclipse.xtext.diagnostics.Severity;
-import org.eclipse.xtext.util.JavaVersion;
 import org.eclipse.xtext.util.Strings;
 import org.eclipse.xtext.xbase.lib.util.ReflectExtensions;
 import org.slf4j.Logger;
@@ -91,6 +85,8 @@ public abstract class AbstractSarlBatchCompilerMojo extends AbstractSarlMojo {
 	private String propertiesFileLocation;
 
 	private List<File> bufferedClasspath;
+
+	private List<File> bufferedTestClasspath;
 
 	@Override
 	protected void prepareExecution() throws MojoExecutionException {
@@ -265,8 +261,6 @@ public abstract class AbstractSarlBatchCompilerMojo extends AbstractSarlMojo {
 		compiler.setTempDirectory(getTempDirectory());
 		compiler.setCleaningPolicy(CleaningPolicy.NO_CLEANING);
 		compiler.setClassPath(classPath);
-		final String bootClassPath = getBootClassPath();
-		compiler.setBootClassPath(bootClassPath);
 		final List<File> filteredSourcePaths = Lists.newArrayList(filtered);
 		compiler.setSourcePath(filteredSourcePaths);
 		compiler.setOutputPath(sarlOutputPath);
@@ -324,75 +318,6 @@ public abstract class AbstractSarlBatchCompilerMojo extends AbstractSarlMojo {
 		}
 	}
 
-	private String getBootClassPath() throws MojoExecutionException {
-		// Bootclasspath is only supported on Java8 and older
-		final String sourceVersionStr = getSourceVersion();
-		if (!Strings.isEmpty(sourceVersionStr)) {
-			final JavaVersion sourceVersion = JavaVersion.fromQualifier(sourceVersionStr);
-			if (sourceVersion != null && sourceVersion.isAtLeast(JavaVersion.JAVA9)) {
-				return ""; //$NON-NLS-1$
-			}
-		}
-		final Toolchain toolchain = this.toolchainManager.getToolchainFromBuildContext("jdk", this.mavenHelper.getSession()); //$NON-NLS-1$
-		if (toolchain instanceof JavaToolchain && toolchain instanceof ToolchainPrivate) {
-			final JavaToolchain javaToolChain = (JavaToolchain) toolchain;
-			final ToolchainPrivate privateJavaToolChain = (ToolchainPrivate) toolchain;
-			getLog().info(MessageFormat.format(Messages.AbstractSarlBatchCompilerMojo_5, javaToolChain));
-
-			String[] includes = {"jre/lib/*", "jre/lib/ext/*", "jre/lib/endorsed/*"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			String[] excludes = new String[0];
-			final Xpp3Dom config = (Xpp3Dom) privateJavaToolChain.getModel().getConfiguration();
-			if (config != null) {
-				final Xpp3Dom bootClassPath = config.getChild("bootClassPath"); //$NON-NLS-1$
-				if (bootClassPath != null) {
-					final Xpp3Dom includeParent = bootClassPath.getChild("includes"); //$NON-NLS-1$
-					if (includeParent != null) {
-						includes = getValues(includeParent.getChildren("include")); //$NON-NLS-1$
-					}
-					final Xpp3Dom excludeParent = bootClassPath.getChild("excludes"); //$NON-NLS-1$
-					if (excludeParent != null) {
-						excludes = getValues(excludeParent.getChildren("exclude")); //$NON-NLS-1$
-					}
-				}
-			}
-
-			try {
-				return scanBootclasspath(Objects.toString(this.reflect.invoke(javaToolChain, "getJavaHome")), includes, excludes); //$NON-NLS-1$
-			} catch (Exception e) {
-				throw new MojoExecutionException(e.getLocalizedMessage(), e);
-			}
-		}
-		return ""; //$NON-NLS-1$
-	}
-
-	private String scanBootclasspath(String javaHome, String[] includes, String[] excludes) {
-		getLog().debug(MessageFormat.format(Messages.AbstractSarlBatchCompilerMojo_6,
-				javaHome, Arrays.toString(includes), Arrays.toString(excludes)));
-		final DirectoryScanner scanner = new DirectoryScanner();
-		scanner.setBasedir(new File(javaHome));
-		scanner.setIncludes(includes);
-		scanner.setExcludes(excludes);
-		scanner.scan();
-
-		final StringBuilder bootClassPath = new StringBuilder();
-		final String[] includedFiles = scanner.getIncludedFiles();
-		for (int i = 0; i < includedFiles.length; i++) {
-			if (i > 0) {
-				bootClassPath.append(File.pathSeparator);
-			}
-			bootClassPath.append(new File(javaHome, includedFiles[i]).getAbsolutePath());
-		}
-		return bootClassPath.toString();
-	}
-
-	private static String[] getValues(Xpp3Dom[] children) {
-		final String[] values = new String[children.length];
-		for (int i = 0; i < values.length; i++) {
-			values[i] = children[i].getValue();
-		}
-		return values;
-	}
-
 	/** Replies temporary directory.
 	 *
 	 * @return the temporary directory.
@@ -434,48 +359,63 @@ public abstract class AbstractSarlBatchCompilerMojo extends AbstractSarlMojo {
 		return null;
 	}
 
-	/** Replies the classpath for the standard code.
+	/** Build the classpath for the standard code.
 	 *
 	 * @return the current classpath.
 	 * @throws MojoExecutionException on failure.
+	 * @see #buildTestClassPath()
+	 * @see #getClassPath()
+	 * @since 0.12
+	 */
+	protected List<File> buildClassPath() throws MojoExecutionException {
+		final Set<String> classPath = new LinkedHashSet<>();
+		final MavenProject project = getProject();
+		classPath.add(project.getBuild().getSourceDirectory());
+		try {
+			classPath.addAll(project.getCompileClasspathElements());
+		} catch (DependencyResolutionRequiredException e) {
+			throw new MojoExecutionException(e.getLocalizedMessage(), e);
+		}
+		for (final Artifact dep : project.getArtifacts()) {
+			classPath.add(dep.getFile().getAbsolutePath());
+		}
+		classPath.remove(project.getBuild().getOutputDirectory());
+		final List<File> files = new ArrayList<>();
+		for (final String filename : classPath) {
+			final File file = new File(filename);
+			if (file.exists()) {
+				files.add(file);
+			} else {
+				getLog().warn(MessageFormat.format(Messages.AbstractSarlBatchCompilerMojo_10, filename));
+			}
+		}
+		return files;
+	}
+
+	/** Replies the classpath for the standard code.
+	 * This function build and save the classpath into a buffer.
+	 *
+	 * @return the current classpath.
+	 * @throws MojoExecutionException on failure.
+	 * @see #buildClassPath()
 	 * @see #getTestClassPath()
 	 */
-	protected List<File> getClassPath() throws MojoExecutionException {
+	protected final List<File> getClassPath() throws MojoExecutionException {
 		if (this.bufferedClasspath == null) {
-			final Set<String> classPath = new LinkedHashSet<>();
-			final MavenProject project = getProject();
-			classPath.add(project.getBuild().getSourceDirectory());
-			try {
-				classPath.addAll(project.getCompileClasspathElements());
-			} catch (DependencyResolutionRequiredException e) {
-				throw new MojoExecutionException(e.getLocalizedMessage(), e);
-			}
-			for (final Artifact dep : project.getArtifacts()) {
-				classPath.add(dep.getFile().getAbsolutePath());
-			}
-			classPath.remove(project.getBuild().getOutputDirectory());
-			final List<File> files = new ArrayList<>();
-			for (final String filename : classPath) {
-				final File file = new File(filename);
-				if (file.exists()) {
-					files.add(file);
-				} else {
-					getLog().warn(MessageFormat.format(Messages.AbstractSarlBatchCompilerMojo_10, filename));
-				}
-			}
-			this.bufferedClasspath = files;
+			this.bufferedClasspath = buildClassPath();
 		}
 		return this.bufferedClasspath;
 	}
 
-	/** Replies the classpath for the test code.
+	/** Build the classpath for the test code.
 	 *
 	 * @return the current classpath.
 	 * @throws MojoExecutionException on failure.
-	 * @since 0.8
-	 * @see #getClassPath()
+	 * @since 0.12
+	 * @see #getTestClassPath()
+	 * @see #buildClassPath()
 	 */
-	protected List<File> getTestClassPath() throws MojoExecutionException {
+	protected List<File> buildTestClassPath() throws MojoExecutionException {
 		final Set<String> classPath = new LinkedHashSet<>();
 		final MavenProject project = getProject();
 		classPath.add(project.getBuild().getTestSourceDirectory());
@@ -497,6 +437,22 @@ public abstract class AbstractSarlBatchCompilerMojo extends AbstractSarlMojo {
 			}
 		}
 		return files;
+	}
+
+	/** Replies the classpath for the test code.
+	 * This function build and save the classpath into a buffer.
+	 *
+	 * @return the current classpath.
+	 * @throws MojoExecutionException on failure.
+	 * @since 0.8
+	 * @see #buildTestClassPath()
+	 * @see #getClassPath()
+	 */
+	protected final List<File> getTestClassPath() throws MojoExecutionException {
+		if (this.bufferedTestClasspath == null) {
+			this.bufferedTestClasspath = buildTestClassPath();
+		}
+		return this.bufferedTestClasspath;
 	}
 
 	/** Child injection module for the SARL maven plugin.

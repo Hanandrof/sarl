@@ -35,11 +35,12 @@
 
 			<!-- FIXME: This extra classpath element is defined for fixing a bug into the Maven's Tycho compiler
 				 that avoids to load the SWT bundle fragment into the classpath. It causes a class not found
-				 exception for a SWT widget. -->
+				 exception for a SWT widget.
+				 The fact that the provided plugin is GTK based should not be a problem because it is 
+				 only for compilation purpose. -->
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-compiler-plugin</artifactId>
-				<version>${tycho.version}</version>
 				<configuration>
 					<extraClasspathElements>
 						<extraClasspathElement>

@@ -65,7 +65,6 @@ import org.eclipse.xtext.xbase.ui.contentassist.ReplacingAppendable;
 import org.eclipse.xtext.xbase.ui.document.DocumentSourceAppender.Factory.OptionalParameters;
 
 import io.sarl.lang.annotation.FiredEvent;
-import io.sarl.lang.annotation.Generated;
 import io.sarl.lang.annotation.SyntheticMember;
 import io.sarl.lang.jvmmodel.SarlJvmModelAssociations;
 import io.sarl.lang.sarl.actionprototype.FormalParameterProvider;
@@ -88,6 +87,8 @@ import io.sarl.lang.util.Utils;
  */
 @SuppressWarnings("checkstyle:classfanoutcomplexity")
 public final class MissedMethodAddModification extends SARLSemanticModification {
+
+	private static final String GENERATE_CLASSNAME = "io.sarl.lang.ui.quickfix.acceptors.Generated"; //$NON-NLS-1$
 
 	@Inject
 	private SarlJvmModelAssociations associations;
@@ -235,7 +236,7 @@ public final class MissedMethodAddModification extends SARLSemanticModification 
 	public static boolean isGeneratedOperation(JvmOperation method) {
 		for (final JvmAnnotationReference annotation : method.getAnnotations()) {
 			if (Objects.equals(SyntheticMember.class.getName(), annotation.getAnnotation().getIdentifier())
-					|| Objects.equals(Generated.class.getName(), annotation.getAnnotation().getIdentifier())) {
+					|| Objects.equals(GENERATE_CLASSNAME, annotation.getAnnotation().getIdentifier())) {
 				return true;
 			}
 		}

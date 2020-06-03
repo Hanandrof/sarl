@@ -1,0 +1,2 @@
+io.sarl.lang.compiler.batch.JavacBatchCompilerFactory
+io.sarl.lang.compiler.batch.EcjBatchCompilerFactory
