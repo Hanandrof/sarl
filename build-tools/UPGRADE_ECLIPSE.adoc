@@ -1,4 +1,4 @@
-= How to Upgadre Eclipse
+= How to Upgrade Eclipse
 :toc: right
 :toc-placement!:
 :hide-uri-scheme:
@@ -13,7 +13,7 @@ The steps for upgrading Eclipse into the SARL project are:
 
 	<tycho.version>2.7.0</tycho.version>
 
-* Upgrade the version of Xtext that is released with Eclipse. `xtext.Version` is the current version number, as well as `xtext.version.current`.
+* Upgrade the version of Xtext that is released with Eclipse. `xtext.version` is the current version number, as well as `xtext.version.current`.
    `xtext.version.next` is the version number that is not yet supported by SARL. `xtext.version.javadoc` is the version number to appear on the
    API documentation.
    **If the version that is embedded into Eclipse does not corresponds to the one on https://search.maven.org/search?q=g:org.eclipse.xtext[Maven Central], you have to add the P2 repository of Xtext (see next section for details).**

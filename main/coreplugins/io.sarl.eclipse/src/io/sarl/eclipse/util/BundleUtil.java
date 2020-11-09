@@ -751,7 +751,7 @@ public final class BundleUtil {
 		 * @param bundle
 		 *      the bundle used as root to start the dynamic search of dependencies.
 		 * @param firstCall
-		 * 		boolean specifying if we are at the first recursive call, in this case we use the {@link #directDependencies}
+		 *      specifying if we are at the first recursive call, in this case we use the {@link #directDependencies}
 		 *      collections to filter the dependencies that are really useful.
 		 */
 		@SuppressWarnings({"checkstyle:nestedifdepth"})

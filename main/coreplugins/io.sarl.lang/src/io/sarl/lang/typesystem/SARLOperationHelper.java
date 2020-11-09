@@ -1014,6 +1014,7 @@ public class SARLOperationHelper implements IOperationHelper {
 				public int occurrences;
 				public final List<XExpression> expressions = new ArrayList<>();
 			}
+
 			final Map<String, Data> full = new TreeMap<>();
 			for (final Map<String, List<XExpression>> definition : buffers) {
 				for (final Entry<String, List<XExpression>> entry : definition.entrySet()) {
