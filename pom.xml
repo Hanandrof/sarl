@@ -61,10 +61,10 @@
 		<!-- The versions of the following Xtext libraries are available at: https://eclipse.org/Xtext/documentation/350_continuous_integration.html -->
 
 		<!-- Version of the Xtext API -->
-		<xtext.version>2.22.0</xtext.version>
-		<xtext.version.current>2.22.0</xtext.version.current>
-		<xtext.version.next>2.22.1</xtext.version.next>
-		<xtext.version.javadoc>2.22</xtext.version.javadoc>
+		<xtext.version>2.23.0</xtext.version>
+		<xtext.version.current>2.23.0</xtext.version.current>
+		<xtext.version.next>2.23.1</xtext.version.next>
+		<xtext.version.javadoc>2.23</xtext.version.javadoc>
 
 		<!-- Version of the MWE2 library (used for accessing the mwe2 P2 http://download.eclipse.org/modeling/emft/mwe/updates/releases/, 
 			see compositeContent.{xml,jar,xz,xml.xz} file) -->
@@ -540,7 +540,7 @@
 			<dependency>
 				<groupId>io.bootique</groupId>
 				<artifactId>bootique</artifactId>
-				<version>1.2</version>
+				<version>1.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.javassist</groupId>

@@ -49,33 +49,36 @@
 			<unit id="com.hazelcast" version="4.0.3"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/releases/2020-06"/>
-			<unit id="epp.package.dsl" version="4.16.0.20200615-1200"/>
-			<unit id="epp.package.java" version="4.16.0.20200615-1200"/>
-			<unit id="org.eclipse.egit.feature.group" version="5.8.0.202006091008-r"/>
-			<unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group" version="1.14.0.v20200424-0456"/>
+			<repository location="https://download.eclipse.org/releases/2020-09"/>
+			<unit id="epp.package.dsl" version="4.17.0.20200910-1200"/>
+			<unit id="epp.package.java" version="4.17.0.20200910-1200"/>
+			<unit id="org.eclipse.core.runtime.feature.feature.group" version="1.2.1000.v20200828-1034"/>
+			<unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group" version="1.15.0.v20200701-0840"/>
 			<unit id="org.eclipse.emf.mwe2.language.sdk.feature.group" version="2.11.3.v20200520-0756"/>
 			<unit id="org.eclipse.emf.mwe2.runtime.sdk.feature.group" version="2.11.3.v20200520-0756"/>
-			<unit id="org.eclipse.emf.sdk.feature.group" version="2.22.0.v20200519-1135"/>
-			<unit id="org.eclipse.epp.mpc.feature.group" version="1.8.3.v20200526-1554"/>
-			<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.800.v20200514-1529"/>
-			<unit id="org.eclipse.jdt.feature.group" version="3.18.400.v20200604-0540"/>
-			<unit id="org.eclipse.jdt.source.feature.group" version="3.18.400.v20200604-0540"/>
+			<unit id="org.eclipse.emf.sdk.feature.group" version="2.23.0.v20200822-0801"/>
+			<unit id="org.eclipse.epp.mpc.feature.group" version="1.8.4.v20200709-0857"/>
+			<unit id="org.eclipse.jdt.feature.group" version="3.18.500.v20200902-1800"/>
+			<unit id="org.eclipse.jdt.source.feature.group" version="3.18.500.v20200902-1800"/>
+			<unit id="org.eclipse.jgit.feature.group" version="5.9.0.202009080501-r"/>
 			<unit id="org.eclipse.lsp4j.sdk.feature.group" version="0.9.0.v20200229-1511"/>
-			<unit id="org.eclipse.m2e.feature.feature.group" version="1.16.0.20200610-1735"/>
-			<unit id="org.eclipse.mylyn.git.feature.group" version="1.17.0.v20180628-1737"/>
-			<unit id="org.eclipse.oomph.setup.feature.group" version="1.17.0.v20200606-0914"/>
-			<unit id="org.eclipse.pde.feature.group" version="3.14.400.v20200604-0540"/>
-			<unit id="org.eclipse.pde.source.feature.group" version="3.14.400.v20200604-0540"/>
-			<unit id="org.eclipse.platform.feature.group" version="4.16.0.v20200604-0951"/>
-			<unit id="org.eclipse.platform.ide" version="4.16.0.I20200604-0540"/>
-			<unit id="org.eclipse.rcp.feature.group" version="4.16.0.v20200604-0951"/>
-			<unit id="org.eclipse.wst.common_core.feature.feature.group" version="3.10.100.v201904082145"/>
-			<unit id="org.eclipse.wst.common_ui.feature.feature.group" version="3.11.0.v201905071717"/>
-			<unit id="org.eclipse.wst.xml_core.feature.feature.group" version="3.18.0.v202005180122"/>
-			<unit id="org.eclipse.xsd.feature.group" version="2.18.0.v20200319-1246"/>
-			<unit id="org.eclipse.xtext.sdk.feature.group" version="2.22.0.v20200602-1533"/>
+			<unit id="org.eclipse.m2e.feature.feature.group" version="1.16.1.20200710-1008"/>
+			<unit id="org.eclipse.mylyn.git.feature.group" version="1.17.0.v20191002-0716"/>
+			<unit id="org.eclipse.oomph.setup.pde.feature.group" version="1.13.0.v20200624-1156"/>
+			<unit id="org.eclipse.pde.feature.group" version="3.14.500.v20200902-1800"/>
+			<unit id="org.eclipse.pde.source.feature.group" version="3.14.500.v20200902-1800"/>
+			<unit id="org.eclipse.platform.feature.group" version="4.17.0.v20200902-1800"/>
+			<unit id="org.eclipse.platform.ide" version="4.17.0.I20200902-1800"/>
+			<unit id="org.eclipse.platform.sdk" version="4.17.0.I20200902-1800"/>
+			<unit id="org.eclipse.platform.source.feature.group" version="4.17.0.v20200902-1800"/>
+			<unit id="org.eclipse.rcp.feature.group" version="4.17.0.v20200902-1800"/>
+			<unit id="org.eclipse.wst.common_core.feature.feature.group" version="3.19.0.v202007161535"/>
+			<unit id="org.eclipse.wst.common_ui.feature.feature.group" version="3.19.0.v202007161535"/>
+			<unit id="org.eclipse.wst.xml_core.feature.feature.group" version="3.19.0.v202008180353"/>
+			<unit id="org.eclipse.xsd.feature.group" version="2.19.0.v20200723-0820"/>
+			<unit id="org.eclipse.xtext.sdk.feature.group" version="2.23.0.v20200831-0926"/>
 			<unit id="org.sonatype.m2e.mavenarchiver.feature.feature.group" version="0.17.5.202002191804"/>
+			<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.900.v20200819-0940"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<repository location="https://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/LATEST"/>
