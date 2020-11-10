@@ -22,6 +22,7 @@
 package io.sarl.m2e.wizards.importproject;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -111,7 +112,10 @@ public class ImportMavenSarlProjectWizard extends MavenImportWizard {
 							MavenImportUtils.forceSimplePom(pomFile.getParentFile(), monitor);
 							submon.worked(1);
 							// Reset the maven model
-							final Model model = MavenPlugin.getMaven().readModel(pomFile);
+							final Model model;
+							try (final FileInputStream fis = new FileInputStream(pomFile)) {
+								model = MavenPlugin.getMaven().readModel(fis);
+							}
 							projectInfo.setModel(model);
 							submon.worked(1);
 						} catch (IOException | CoreException exception) {
