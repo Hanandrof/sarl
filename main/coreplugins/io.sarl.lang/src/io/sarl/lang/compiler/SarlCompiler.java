@@ -43,6 +43,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.xtend.core.compiler.XtendCompiler;
 import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.common.types.JvmAnnotationAnnotationValue;
 import org.eclipse.xtext.common.types.JvmAnnotationReference;
@@ -97,7 +98,6 @@ import org.eclipse.xtext.xbase.typesystem.IResolvedTypes;
 import org.eclipse.xtext.xbase.typesystem.references.LightweightTypeReference;
 import org.eclipse.xtext.xbase.util.XExpressionHelper;
 
-import io.sarl.lang.bugfixes.pending.bug626.Bug626XtendCompiler;
 import io.sarl.lang.controlflow.ISarlEarlyExitComputer;
 import io.sarl.lang.jvmmodel.Messages;
 import io.sarl.lang.jvmmodel.SARLJvmModelInferrer;
@@ -145,7 +145,7 @@ import io.sarl.lang.util.Utils;
  * @since 0.4
  */
 @SuppressWarnings("checkstyle:classfanoutcomplexity")
-public class SarlCompiler extends Bug626XtendCompiler {
+public class SarlCompiler extends XtendCompiler {
 
 	private static final String INLINE_VARIABLE_PREFIX = "$"; //$NON-NLS-1$
 
